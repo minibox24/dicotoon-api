@@ -1,14 +1,18 @@
 from fastapi import FastAPI
 from tortoise.contrib.fastapi import register_tortoise
 
+from models import *
 import os
 
 app = FastAPI()
 
 
 @app.get("/")
-def main():
-    return {"hello": "world"}
+async def status():
+    channels = await ToonChannel.all().count()
+    images = await ToonData.all().count()
+
+    return {"channels": channels, "images": images}
 
 
 register_tortoise(
