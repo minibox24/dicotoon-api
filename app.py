@@ -15,6 +15,13 @@ async def status():
     return {"channels": channels, "images": images}
 
 
+@app.get("/exist/{id_}")
+async def exist_channel(id_: int):
+    exist = await ToonChannel.exists(id=id_)
+
+    return {"exist": exist}
+
+
 register_tortoise(
     app,
     db_url=os.environ.get("DB_URL"),
