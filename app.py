@@ -15,14 +15,14 @@ async def status():
     return {"channels": channels, "images": images}
 
 
-@app.get("/exist/{id_}")
+@app.get("/channels/{id_}/exist")
 async def exist_channel(id_: int):
     exist = await ToonChannel.exists(id=id_)
 
     return {"exist": exist}
 
 
-@app.get("/info/{id_}")
+@app.get("/channels/{id_}")
 async def channel_info(id_: int):
     channel = await ToonChannel.get(id=id_)
     all_ = await ToonData.filter(channel_id=id_).count()
@@ -50,7 +50,7 @@ async def channel_info(id_: int):
     }
 
 
-@app.get("/images/{id_}")
+@app.get("/channels/{id_}/images")
 async def get_images(id_: int):
     images = await ToonData.filter(channel_id=id_).order_by("created_at").values("url")
     return list(map(lambda i: i["url"], images))
