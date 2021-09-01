@@ -22,6 +22,12 @@ async def exist_channel(id_: int):
     return {"exist": exist}
 
 
+@app.get("/images/{id_}")
+async def get_images(id_: int):
+    images = await ToonData.filter(channel_id=id_).order_by("created_at").values("url")
+    return list(map(lambda i: i["url"], images))
+
+
 register_tortoise(
     app,
     db_url=os.environ.get("DB_URL"),
