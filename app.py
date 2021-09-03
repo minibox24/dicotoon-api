@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from tortoise.contrib.fastapi import register_tortoise
 
 from models import *
@@ -23,8 +23,13 @@ async def exist_channel(id_: int):
 
 
 @app.get("/channels/{id_}")
-async def channel_info(id_: int):
-    channel = await ToonChannel.get(id=id_)
+async def channel_info(id_: int, response: Response):
+    channel = await ToonChannel.filter(id=id_).first()
+
+    if not channel:
+        response.status_code = 404
+        return {"error": "not found"}
+
     all_ = await ToonData.filter(channel_id=id_).count()
 
     contributors = {}
@@ -51,8 +56,14 @@ async def channel_info(id_: int):
 
 
 @app.get("/channels/{id_}/images")
-async def get_images(id_: int):
-    images = await ToonData.filter(channel_id=id_).order_by("created_at").values("url")
+async def get_images(id_: int, response: Response):
+    channel = await ToonChannel.filter(id=id_).first()
+
+    if not channel:
+        response.status_code = 404
+        return {"error": "not found"}
+
+    images = await ToonData.filter(channel=channel).order_by("created_at").values("url")
     return list(map(lambda i: i["url"], images))
 
 
