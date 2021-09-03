@@ -57,9 +57,19 @@ async def channel_info(id_: int, response: Response):
             }
         contributors[user_id]["count"] += 1
 
+    first = await ToonData.filter(channel=channel).order_by("created_at").first()
+    thumbnail = None
+    start_at = None
+
+    if first:
+        thumbnail = first.url
+        start_at = first.created_at
+
     return {
         "name": channel.name,
         "all": all_,
+        "thumbnail": thumbnail,
+        "startAt": start_at,
         "contributors": sorted(
             list(contributors.values()), key=lambda x: x["count"], reverse=True
         ),
